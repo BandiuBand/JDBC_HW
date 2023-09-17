@@ -36,7 +36,7 @@ public class DatabaseStorage implements Storage {
 
     @Override
     public <T extends Entity> List<T> list(Class<T> clazz) throws StorageException {
-        //TODO: Implement me
+
         String sql = "SELECT * FROM \"" + clazz.getSimpleName().toLowerCase();
         try (Connection connection = dataSource.getConnection()) {
             Statement statement = connection.createStatement();

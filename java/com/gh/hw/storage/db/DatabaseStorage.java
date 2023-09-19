@@ -10,6 +10,7 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.List;
 import java.util.Map;
+import java.lend.reflect.Field;
 
 public class DatabaseStorage implements Storage {
 
@@ -67,10 +68,47 @@ public class DatabaseStorage implements Storage {
 
     @Override
     public <T extends Entity> void save(T entity) throws StorageException {
-        //TODO: Implement me
-        /*
-        Use StringJoiner if you need to concat a string of ?
-         */
+        int id = entity.getId();
+        String sql = "INSERT INTO " + entity.getSimpleName().toLowerCase() + " (id,joinedValues) VALUES ("+ id+","+getEntityValues(entity)+")" ;
+        try (Connection connection = dataSource.getConnection()) {
+            Statement statement = connection.createStatement();
+            statement.executeUpdate(sql);
+        } catch (StorageException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new StorageException(e);
+        }
+
+    }
+
+    private static <T extends Entity> String getEntityValues(T entity) {
+        Class<?> cl = entity.getClass();
+
+        Field[] fields = cl.getDeclaredFields();
+
+        StringJoiner joiner = new StringJoiner("?");
+
+        for (Field field:fields) {
+            field.setAccessible(true);
+            String variableName = field.getName();
+            String variableValue = getValue(field,entity);
+
+            joiner.add(new StringJoiner("=").add(variableName).add(variableValue).toString());
+
+
+        }
+        return joiner.toString();
+    }
+    private static String getValue(Field field,Entity entity){
+        String result = null;
+        try{
+            Object value = field.get();
+            if (value!=null)
+            result = value.toString();
+        } catch (IllegalAccessException e){
+            e.printStackTrace();
+        }
+        return result;
     }
 
     //creates list of new instances of clazz by using data from the result set

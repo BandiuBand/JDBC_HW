@@ -23,7 +23,7 @@ public class DatabaseStorage implements Storage {
     @Override
     public <T extends Entity> T get(Class<T> clazz, Integer id) throws StorageException {
         //this method is fully implemented, no need to do anything, it's just an example
-        String sql = "SELECT * FROM \"" + clazz.getSimpleName().toLowerCase() + "\" WHERE id = " + id;
+        String sql = "SELECT * FROM " + clazz.getSimpleName().toLowerCase() + " WHERE id = " + id;
         try (Connection connection = dataSource.getConnection()) {
             Statement statement = connection.createStatement();
             List<T> result = extractResult(clazz, statement.executeQuery(sql));
@@ -38,7 +38,7 @@ public class DatabaseStorage implements Storage {
     @Override
     public <T extends Entity> List<T> list(Class<T> clazz) throws StorageException {
 
-        String sql = "SELECT * FROM \"" + clazz.getSimpleName().toLowerCase();
+        String sql = "SELECT * FROM " + clazz.getSimpleName().toLowerCase();
         try (Connection connection = dataSource.getConnection()) {
             Statement statement = connection.createStatement();
             List<T> result = extractResult(clazz, statement.executeQuery(sql));
@@ -53,7 +53,7 @@ public class DatabaseStorage implements Storage {
     @Override
     public <T extends Entity> boolean delete(T entity) throws StorageException {
         int id = entity.getId();
-        String sql = "DELETE FROM \"" + entity.getSimpleName().toLowerCase() + "\" WHERE id = " + id;
+        String sql = "DELETE FROM " + entity.getSimpleName().toLowerCase() + " WHERE id = " + id;
         try (Connection connection = dataSource.getConnection()) {
             Statement statement = connection.createStatement();
             statement.executeUpdate(sql);

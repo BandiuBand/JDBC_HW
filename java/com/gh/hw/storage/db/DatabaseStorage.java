@@ -113,10 +113,23 @@ public class DatabaseStorage implements Storage {
 
     //creates list of new instances of clazz by using data from the result set
     private <T extends Entity> List<T> extractResult(Class<T> clazz, ResultSet resultSet) throws Exception {
-        /*
-        This method must a create a resulting list of entities. Fill objects with data from the results set.
-        Use reflection to create an instance of given class. Extract data from result set by class' field name.
-         */
+
+        List<T> resultList = new ArrayList<>();
+
+        resultList.add(getEntity(resultSet.getInt("id"),resultSet.getString("joinedValues")));
+
+        while(resultSet.next()) {
+
+
+            resultList.add(getEntity(resultSet.getInt("id"),resultSet.getString("joinedValues")));
+
+        }
+
+        return resultList;
+    }
+
+    private <T extends Entity> T getEntity(int id,String lineOfValues){
+        //todo implement me
         return null;
     }
 

@@ -116,21 +116,52 @@ public class DatabaseStorage implements Storage {
 
         List<T> resultList = new ArrayList<>();
 
-        resultList.add(getEntity(resultSet.getInt("id"),resultSet.getString("joinedValues")));
+        resultList.add(getEntity(resultSet.getInt("id"),resultSet.getString("joinedValues"),clazz));
 
         while(resultSet.next()) {
 
 
-            resultList.add(getEntity(resultSet.getInt("id"),resultSet.getString("joinedValues")));
+            resultList.add(getEntity(resultSet.getInt("id"),resultSet.getString("joinedValues"),clazz));
 
         }
 
         return resultList;
     }
 
-    private <T extends Entity> T getEntity(int id,String lineOfValues){
-        //todo implement me
-        return null;
+    private <T extends Entity> T getEntity(int id,String lineOfValues,Class<T> clazz){
+        T instance = clazz.newInstance();
+
+        Map<String,String> mapVariable = getMapOfVariable(lineOfValues); //toDo
+
+        Field[] fields = clazz.getDeclaredFields();
+
+        for (Field field:fields) {
+
+            String name = field.getName();
+            Class fieldClass = field.getDeclaringClass();
+
+            field.setAccessible(true);
+            field.set(instance,getValue(name,mapVariable));
+        }
+
+        return instance;
+    }
+
+    private static Map<String,String> getMapOfVariable(String lineOfValues){
+        Map<String,String> map = new HashMap<>();
+
+        String[] entries = lineOfValues.split("\\?");
+
+        for (String entry:entries) {
+
+            String[] splited = entry.split("=");
+            if (splited.length!=2)
+                throw new Exception("Irrcorect data");
+            else
+            map.put(splited[0],splited[1]);
+
+        }
+        return map;
     }
 
     //converts object to map, could be helpful in save method

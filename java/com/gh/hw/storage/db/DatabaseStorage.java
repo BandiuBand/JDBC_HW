@@ -131,7 +131,7 @@ public class DatabaseStorage implements Storage {
     private <T extends Entity> T getEntity(int id,String lineOfValues,Class<T> clazz){
         T instance = clazz.newInstance();
 
-        Map<String,String> mapVariable = getMapOfVariable(lineOfValues); //toDo
+        Map<String,String> mapVariable = getMapOfVariable(lineOfValues);
 
         Field[] fields = clazz.getDeclaredFields();
 

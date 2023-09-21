@@ -141,10 +141,41 @@ public class DatabaseStorage implements Storage {
             Class fieldClass = field.getDeclaringClass();
 
             field.setAccessible(true);
-            field.set(instance,getValue(name,mapVariable));
+            field.set(instance,getValue(name,fieldClass,mapVariable));
         }
 
         return instance;
+    }
+
+    private static Object getValue(String name,Class<?> fieldClass,Map<String,String> mapVariable){
+        Object result = null;
+        try {
+
+        String value = mapVariable.get(name);
+            if (value!=null)
+                result = parseValue(fieldClass,value);
+        }
+        catch (Exception e){
+            throw new Exception("Error while getting value", e);
+            }
+        return result;
+    }
+
+    private static Object parseValue(Class<?> fieldType, String value) {
+        if (fieldType == Integer.class || fieldType == int.class) {
+            return Integer.parseInt(value);
+        } else if (fieldType == Boolean.class || fieldType == boolean.class) {
+            return Boolean.parseBoolean(value);
+        } else if (fieldType == Double.class || fieldType == double.class) {
+            return Double.parseDouble(value);
+        } else if (fieldType == String.class) {
+            return value;
+        } else if (fieldType == LocalDate.class) {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+            return LocalDate.parse(value, formatter);
+        } else {
+            throw new IllegalArgumentException("Unsupported field type: " + fieldType.getName());
+        }
     }
 
     private static Map<String,String> getMapOfVariable(String lineOfValues){
